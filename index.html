@@ -168,7 +168,13 @@
             selectedCategory: '',
             newExerciseName: '',
             newExerciseCategory: 'chest',
-            progressView: null
+            progressView: null,
+            cloud: {
+                scriptUrl: '',
+                passcode: '',
+                signedIn: false,
+                status: ''
+            }
         };
 
         // Load data from localStorage
@@ -189,6 +195,121 @@
             localStorage.setItem('gym-exercises', JSON.stringify(state.exercises));
             localStorage.setItem('gym-workouts', JSON.stringify(state.workoutLog));
         }
+
+// ---------------------------
+// Cloud Sync (Google Apps Script Web App) - passcode gated
+// ---------------------------
+// 1) Create an Apps Script Web App (code below in chat) and paste its URL here:
+// Example: https://script.google.com/macros/s/AKfycb.../exec
+// NOTE: This is convenience security (shared passcode), not strong auth.
+function setCloudScriptUrl(url) {
+    state.cloud.scriptUrl = (url || '').trim();
+    localStorage.setItem('gym-cloud-url', state.cloud.scriptUrl);
+}
+
+function loadCloudSettings() {
+    const savedUrl = localStorage.getItem('gym-cloud-url');
+    const savedSignedIn = localStorage.getItem('gym-cloud-signedin') === '1';
+    if (savedUrl) state.cloud.scriptUrl = savedUrl;
+    state.cloud.signedIn = savedSignedIn && !!state.cloud.passcode;
+}
+
+function setPasscode(passcode) {
+    state.cloud.passcode = (passcode || '').trim();
+    state.cloud.signedIn = !!state.cloud.passcode;
+    localStorage.setItem('gym-cloud-signedin', state.cloud.signedIn ? '1' : '0');
+}
+
+// JSONP GET (avoids CORS issues from GitHub Pages)
+function cloudJsonp(action, params = {}) {
+    return new Promise((resolve, reject) => {
+        if (!state.cloud.scriptUrl) return reject(new Error('Missing Script URL'));
+        if (!state.cloud.passcode) return reject(new Error('Missing passcode'));
+
+        const cbName = 'cb_' + Math.random().toString(36).slice(2);
+        const cleanup = () => {
+            delete window[cbName];
+            const s = document.getElementById(cbName);
+            if (s) s.remove();
+        };
+
+        window[cbName] = (data) => {
+            cleanup();
+            resolve(data);
+        };
+
+        const q = new URLSearchParams({
+            action,
+            passcode: state.cloud.passcode,
+            callback: cbName,
+            ...params
+        });
+
+        const script = document.createElement('script');
+        script.id = cbName;
+        script.src = state.cloud.scriptUrl + '?' + q.toString();
+        script.onerror = () => {
+            cleanup();
+            reject(new Error('Cloud request failed'));
+        };
+        document.body.appendChild(script);
+    });
+}
+
+// Fire-and-forget write (avoids CORS read)
+function cloudSendBeacon(action, payloadObj) {
+    if (!state.cloud.scriptUrl) throw new Error('Missing Script URL');
+    if (!state.cloud.passcode) throw new Error('Missing passcode');
+    const body = new URLSearchParams({
+        action,
+        passcode: state.cloud.passcode,
+        payload: JSON.stringify(payloadObj)
+    });
+    return navigator.sendBeacon(state.cloud.scriptUrl, body);
+}
+
+// Merge pulled sessions into local log (by id)
+function mergeWorkoutsIntoLocal(incomingWorkouts) {
+    const byId = new Map(state.workoutLog.map(w => [String(w.id), w]));
+    incomingWorkouts.forEach(w => {
+        const key = String(w.id);
+        const existing = byId.get(key);
+        if (!existing) {
+            byId.set(key, w);
+        } else {
+            // Keep the newer updated_at if present, else keep existing
+            const exU = existing.updated_at ? new Date(existing.updated_at).getTime() : 0;
+            const inU = w.updated_at ? new Date(w.updated_at).getTime() : 0;
+            if (inU > exU) byId.set(key, w);
+        }
+    });
+    state.workoutLog = Array.from(byId.values()).sort((a,b)=> new Date(a.date) - new Date(b.date));
+    saveData();
+}
+
+async function cloudPull() {
+    const res = await cloudJsonp('list');
+    if (!res || res.ok !== true) throw new Error((res && res.error) || 'Unknown error');
+    mergeWorkoutsIntoLocal(res.workouts || []);
+    state.cloud.status = `Pulled ${ (res.workouts||[]).length } session(s) from cloud.`;
+    render();
+}
+
+function cloudPushAllLocal() {
+    if (state.workoutLog.length === 0) {
+        state.cloud.status = 'No local workouts to push.';
+        render();
+        return;
+    }
+    let okCount = 0;
+    state.workoutLog.forEach(w => {
+        const sent = cloudSendBeacon('upsert', { workout: w });
+        if (sent) okCount++;
+    });
+    state.cloud.status = `Sent ${okCount} session(s) to cloud (background write). Now tap "Pull from Cloud" to confirm.`;
+    render();
+}
+
 
         // Export backup
         function exportData() {
@@ -329,9 +450,11 @@
         function saveWorkout() {
             if (state.currentWorkout.length === 0) return;
             
+            const nowIso = new Date().toISOString();
             const workout = {
                 id: Date.now(),
-                date: new Date().toISOString(),
+                date: nowIso,
+                updated_at: nowIso,
                 exercises: state.currentWorkout
             };
             
@@ -380,6 +503,7 @@
                     <button class="btn" onclick="navigateTo('progress')">📈 View Progress</button>
                     <button class="btn" onclick="navigateTo('manage')">✏️ Manage Exercises</button>
                     <button class="btn" onclick="navigateTo('history')">📅 Workout History</button>
+                    <button class="btn" onclick="navigateTo('cloud')">☁️ Cloud Sync</button>
                 </div>
 
                 <div class="card">
@@ -662,7 +786,57 @@
                 });
             }
 
-            return html;
+            
+function renderCloud() {
+    const urlVal = state.cloud.scriptUrl || '';
+    const signedIn = !!state.cloud.passcode;
+    return `
+        <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
+        <h1>Cloud Sync</h1>
+
+        <div class="card" style="background: rgba(59, 130, 246, 0.15);">
+            <p style="font-size: 0.95em; line-height: 1.35;">
+                This sync shares your workouts across devices using a Google Sheet behind a Google Apps Script Web App.
+                Access is protected by a shared passcode (simple, not bank-vault security).
+            </p>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 10px;">1) Script URL</h3>
+            <input type="text" placeholder="Paste your Apps Script Web App URL here" value="${urlVal}"
+                   oninput="setCloudScriptUrl(this.value)">
+            <div style="font-size: 0.9em; opacity: 0.85;">
+                Tip: it ends with <code>/exec</code>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 10px;">2) Passcode</h3>
+            <input type="password" placeholder="Enter passcode" value="${state.cloud.passcode || ''}"
+                   oninput="setPasscode(this.value)">
+            <div style="font-size: 0.9em; opacity: 0.85;">
+                Status: ${signedIn ? '✅ Signed in' : '⚠️ Not signed in'}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 10px;">Sync Actions</h3>
+            <button class="btn" onclick="cloudPull()">⬇️ Pull from Cloud</button>
+            <button class="btn btn-secondary" onclick="cloudPushAllLocal()">⬆️ Push All Local to Cloud</button>
+            <div style="margin-top: 10px; font-size: 0.95em; opacity: 0.9;">
+                ${state.cloud.status ? state.cloud.status : ' '}
+            </div>
+        </div>
+
+        <div class="card" style="background: rgba(236, 72, 153, 0.12);">
+            <p style="font-size: 0.9em; line-height: 1.35;">
+                Recommended flow on a new device: set Script URL + passcode, then tap <strong>Pull from Cloud</strong>.
+            </p>
+        </div>
+    `;
+}
+
+return html;
         }
 
         // Navigation
@@ -693,6 +867,9 @@
                 case 'history':
                     content = renderHistory();
                     break;
+                case 'cloud':
+                    content = renderCloud();
+                    break;
             }
 
             app.innerHTML = content;
@@ -700,6 +877,7 @@
 
         // Initialize
         loadData();
+        loadCloudSettings();
         render();
     </script>
 </body>
