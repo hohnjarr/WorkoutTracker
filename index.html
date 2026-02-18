@@ -737,59 +737,62 @@ function cloudPushAllLocal() {
         }
 
         function renderHistory() {
-            let html = `
-                <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
-                <h1>Workout History</h1>
+    let html = `
+        <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
+        <h1>Workout History</h1>
+    `;
+
+    if (state.workoutLog.length === 0) {
+        html += `
+            <div class="card" style="text-align: center; padding: 40px;">
+                <p style="font-size: 1.2em;">No workouts logged yet</p>
+                <p style="opacity: 0.8; margin-top: 10px;">Start tracking your progress today!</p>
+            </div>
+        `;
+    } else {
+        state.workoutLog.slice().reverse().forEach(workout => {
+            html += `
+                <div class="card">
+                    <div class="workout-date">
+                        ${new Date(workout.date).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
+                    </div>
             `;
 
-            if (state.workoutLog.length === 0) {
+            workout.exercises.forEach(exercise => {
                 html += `
-                    <div class="card" style="text-align: center; padding: 40px;">
-                        <p style="font-size: 1.2em;">No workouts logged yet</p>
-                        <p style="opacity: 0.8; margin-top: 10px;">Start tracking your progress today!</p>
-                    </div>
+                    <div class="exercise-item">
+                        <strong>${exercise.name}</strong><br>
                 `;
-            } else {
-                state.workoutLog.slice().reverse().forEach(workout => {
-                    html += `
-                        <div class="card">
-                            <div class="workout-date">
-                                ${new Date(workout.date).toLocaleDateString('en-US', { 
-                                    weekday: 'long', 
-                                    year: 'numeric', 
-                                    month: 'long', 
-                                    day: 'numeric' 
-                                })}
-                            </div>
-                    `;
 
-                    workout.exercises.forEach(exercise => {
-                        html += `
-                            <div class="exercise-item">
-                                <strong>${exercise.name}</strong><br>
-                        `;
-
-                        if (exercise.type === 'strength') {
-                            exercise.sets.forEach((set, idx) => {
-                                html += `<div style="font-size: 0.9em; opacity: 0.9;">Set ${idx + 1}: ${set.weight} lbs × ${set.reps} reps</div>`;
-                            });
-                        } else {
-                            if (exercise.duration) html += `<div style="font-size: 0.9em; opacity: 0.9;">Duration: ${exercise.duration} min</div>`;
-                            if (exercise.distance) html += `<div style="font-size: 0.9em; opacity: 0.9;">Distance: ${exercise.distance} miles</div>`;
-                            if (exercise.calories) html += `<div style="font-size: 0.9em; opacity: 0.9;">Calories: ${exercise.calories}</div>`;
-                        }
-
-                        html += `</div>`;
+                if (exercise.type === 'strength') {
+                    exercise.sets.forEach((set, idx) => {
+                        html += `<div style="font-size: 0.9em; opacity: 0.9;">Set ${idx + 1}: ${set.weight} lbs × ${set.reps} reps</div>`;
                     });
+                } else {
+                    if (exercise.duration) html += `<div style="font-size: 0.9em; opacity: 0.9;">Duration: ${exercise.duration} min</div>`;
+                    if (exercise.distance) html += `<div style="font-size: 0.9em; opacity: 0.9;">Distance: ${exercise.distance} miles</div>`;
+                    if (exercise.calories) html += `<div style="font-size: 0.9em; opacity: 0.9;">Calories: ${exercise.calories}</div>`;
+                }
 
-                    html += `</div>`;
-                });
-            }
+                html += `</div>`;
+            });
 
+            html += `</div>`;
+        });
+    }
+
+    return html;
+}
             
 function renderCloud() {
     const urlVal = state.cloud.scriptUrl || '';
     const signedIn = !!state.cloud.passcode;
+
     return `
         <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
         <h1>Cloud Sync</h1>
@@ -882,4 +885,3 @@ return html;
     </script>
 </body>
 </html>
-
