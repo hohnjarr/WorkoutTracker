@@ -8,11 +8,7 @@
     <meta name="apple-mobile-web-app-title" content="Gym Tracker">
     <title>Gym Workout Tracker</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1e293b 0%, #6b21a8 50%, #1e293b 100%);
@@ -20,15 +16,8 @@
             color: white;
             padding: 20px;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { font-size: 2em; margin-bottom: 20px; text-align: center; }
         .card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
@@ -48,22 +37,10 @@
             margin-bottom: 10px;
             cursor: pointer;
         }
-        .btn:active {
-            opacity: 0.8;
-        }
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .btn-small {
-            padding: 8px 15px;
-            width: auto;
-            font-size: 14px;
-            display: inline-block;
-            margin: 5px;
-        }
-        .btn-danger {
-            background: #ef4444;
-        }
+        .btn:active { opacity: 0.8; }
+        .btn-secondary { background: rgba(255, 255, 255, 0.2); }
+        .btn-small { padding: 8px 15px; width: auto; font-size: 14px; display: inline-block; margin: 5px; }
+        .btn-danger { background: #ef4444; }
         input, select {
             width: 100%;
             padding: 12px;
@@ -74,36 +51,12 @@
             font-size: 16px;
             margin-bottom: 10px;
         }
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        .exercise-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        .flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-        .hidden {
-            display: none;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .set-row {
-            display: grid;
-            grid-template-columns: 60px 1fr 1fr 40px;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 8px;
-        }
+        input::placeholder { color: rgba(255, 255, 255, 0.6); }
+        .exercise-item { background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 10px; }
+        .flex { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .hidden { display: none; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .set-row { display: grid; grid-template-columns: 60px 1fr 1fr 40px; gap: 10px; align-items: center; margin-bottom: 8px; }
         .category-btn {
             background: rgba(255, 255, 255, 0.2);
             padding: 12px;
@@ -113,36 +66,13 @@
             cursor: pointer;
             font-weight: 600;
         }
-        .category-btn.active {
-            background: #8b5cf6;
-        }
-        .stat-box {
-            text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            display: block;
-        }
-        .stat-label {
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
-        .back-btn {
-            color: white;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-        .workout-date {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
+        .category-btn.active { background: #8b5cf6; }
+        .stat-box { text-align: center; padding: 15px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        .stat-number { font-size: 2em; font-weight: bold; display: block; }
+        .stat-label { font-size: 0.9em; opacity: 0.8; }
+        .back-btn { color: white; text-decoration: none; display: inline-block; margin-bottom: 20px; font-size: 16px; }
+        .workout-date { font-size: 1.1em; font-weight: 600; margin-bottom: 10px; }
+        code { background: rgba(255,255,255,0.12); padding: 2px 6px; border-radius: 6px; }
     </style>
 </head>
 <body>
@@ -151,7 +81,9 @@
     </div>
 
     <script>
-        // Data storage
+        // ---------------------------
+        // State
+        // ---------------------------
         let state = {
             currentScreen: 'home',
             exercises: {
@@ -177,152 +109,146 @@
             }
         };
 
-        // Load data from localStorage
+        // ---------------------------
+        // Local storage
+        // ---------------------------
         function loadData() {
             const savedExercises = localStorage.getItem('gym-exercises');
             const savedWorkouts = localStorage.getItem('gym-workouts');
-            
-            if (savedExercises) {
-                state.exercises = JSON.parse(savedExercises);
-            }
-            if (savedWorkouts) {
-                state.workoutLog = JSON.parse(savedWorkouts);
-            }
+            if (savedExercises) state.exercises = JSON.parse(savedExercises);
+            if (savedWorkouts) state.workoutLog = JSON.parse(savedWorkouts);
         }
 
-        // Save data to localStorage
         function saveData() {
             localStorage.setItem('gym-exercises', JSON.stringify(state.exercises));
             localStorage.setItem('gym-workouts', JSON.stringify(state.workoutLog));
         }
 
-// ---------------------------
-// Cloud Sync (Google Apps Script Web App) - passcode gated
-// ---------------------------
-// 1) Create an Apps Script Web App (code below in chat) and paste its URL here:
-// Example: https://script.google.com/macros/s/AKfycb.../exec
-// NOTE: This is convenience security (shared passcode), not strong auth.
-function setCloudScriptUrl(url) {
-    state.cloud.scriptUrl = (url || '').trim();
-    localStorage.setItem('gym-cloud-url', state.cloud.scriptUrl);
-}
-
-function loadCloudSettings() {
-    const savedUrl = localStorage.getItem('gym-cloud-url');
-    const savedSignedIn = localStorage.getItem('gym-cloud-signedin') === '1';
-    if (savedUrl) state.cloud.scriptUrl = savedUrl;
-    state.cloud.signedIn = savedSignedIn && !!state.cloud.passcode;
-}
-
-function setPasscode(passcode) {
-    state.cloud.passcode = (passcode || '').trim();
-    state.cloud.signedIn = !!state.cloud.passcode;
-    localStorage.setItem('gym-cloud-signedin', state.cloud.signedIn ? '1' : '0');
-}
-
-// JSONP GET (avoids CORS issues from GitHub Pages)
-function cloudJsonp(action, params = {}) {
-    return new Promise((resolve, reject) => {
-        if (!state.cloud.scriptUrl) return reject(new Error('Missing Script URL'));
-        if (!state.cloud.passcode) return reject(new Error('Missing passcode'));
-
-        const cbName = 'cb_' + Math.random().toString(36).slice(2);
-        const cleanup = () => {
-            delete window[cbName];
-            const s = document.getElementById(cbName);
-            if (s) s.remove();
-        };
-
-        window[cbName] = (data) => {
-            cleanup();
-            resolve(data);
-        };
-
-        const q = new URLSearchParams({
-            action,
-            passcode: state.cloud.passcode,
-            callback: cbName,
-            ...params
-        });
-
-        const script = document.createElement('script');
-        script.id = cbName;
-        script.src = state.cloud.scriptUrl + '?' + q.toString();
-        script.onerror = () => {
-            cleanup();
-            reject(new Error('Cloud request failed'));
-        };
-        document.body.appendChild(script);
-    });
-}
-
-// Fire-and-forget write (avoids CORS read)
-function cloudSendBeacon(action, payloadObj) {
-    if (!state.cloud.scriptUrl) throw new Error('Missing Script URL');
-    if (!state.cloud.passcode) throw new Error('Missing passcode');
-    const body = new URLSearchParams({
-        action,
-        passcode: state.cloud.passcode,
-        payload: JSON.stringify(payloadObj)
-    });
-    return navigator.sendBeacon(state.cloud.scriptUrl, body);
-}
-
-// Merge pulled sessions into local log (by id)
-function mergeWorkoutsIntoLocal(incomingWorkouts) {
-    const byId = new Map(state.workoutLog.map(w => [String(w.id), w]));
-    incomingWorkouts.forEach(w => {
-        const key = String(w.id);
-        const existing = byId.get(key);
-        if (!existing) {
-            byId.set(key, w);
-        } else {
-            // Keep the newer updated_at if present, else keep existing
-            const exU = existing.updated_at ? new Date(existing.updated_at).getTime() : 0;
-            const inU = w.updated_at ? new Date(w.updated_at).getTime() : 0;
-            if (inU > exU) byId.set(key, w);
+        // ---------------------------
+        // Cloud Sync (Google Apps Script Web App) - passcode gated
+        // ---------------------------
+        function setCloudScriptUrl(url) {
+            state.cloud.scriptUrl = (url || '').trim();
+            localStorage.setItem('gym-cloud-url', state.cloud.scriptUrl);
         }
-    });
-    state.workoutLog = Array.from(byId.values()).sort((a,b)=> new Date(a.date) - new Date(b.date));
-    saveData();
-}
 
-async function cloudPull() {
-    const res = await cloudJsonp('list');
-    if (!res || res.ok !== true) throw new Error((res && res.error) || 'Unknown error');
-    mergeWorkoutsIntoLocal(res.workouts || []);
-    state.cloud.status = `Pulled ${ (res.workouts||[]).length } session(s) from cloud.`;
-    render();
-}
+        function loadCloudSettings() {
+            const savedUrl = localStorage.getItem('gym-cloud-url');
+            if (savedUrl) state.cloud.scriptUrl = savedUrl;
+            // Passcode is intentionally NOT stored. You'll re-enter after refresh.
+            state.cloud.signedIn = false;
+        }
 
-function cloudPushAllLocal() {
-    if (state.workoutLog.length === 0) {
-        state.cloud.status = 'No local workouts to push.';
-        render();
-        return;
-    }
-    let okCount = 0;
-    state.workoutLog.forEach(w => {
-        const sent = cloudSendBeacon('upsert', { workout: w });
-        if (sent) okCount++;
-    });
-    state.cloud.status = `Sent ${okCount} session(s) to cloud (background write). Now tap "Pull from Cloud" to confirm.`;
-    render();
-}
+        function setPasscode(passcode) {
+            state.cloud.passcode = (passcode || '').trim();
+            state.cloud.signedIn = !!state.cloud.passcode;
+        }
 
+        // JSONP GET (avoids CORS issues from GitHub Pages)
+        function cloudJsonp(action, params = {}) {
+            return new Promise((resolve, reject) => {
+                if (!state.cloud.scriptUrl) return reject(new Error('Missing Script URL'));
+                if (!state.cloud.passcode) return reject(new Error('Missing passcode'));
 
-        // Export backup
+                const cbName = 'cb_' + Math.random().toString(36).slice(2);
+                const cleanup = () => {
+                    try { delete window[cbName]; } catch (e) {}
+                    const s = document.getElementById(cbName);
+                    if (s) s.remove();
+                };
+
+                window[cbName] = (data) => { cleanup(); resolve(data); };
+
+                const q = new URLSearchParams({
+                    action,
+                    passcode: state.cloud.passcode,
+                    callback: cbName,
+                    ...params
+                });
+
+                const script = document.createElement('script');
+                script.id = cbName;
+                script.src = state.cloud.scriptUrl + '?' + q.toString();
+                script.onerror = () => { cleanup(); reject(new Error('Cloud request failed')); };
+                document.body.appendChild(script);
+            });
+        }
+
+        // Fire-and-forget write (avoids CORS read). Uses sendBeacon for background writes.
+        function cloudSendBeacon(action, payloadObj) {
+            if (!state.cloud.scriptUrl) throw new Error('Missing Script URL');
+            if (!state.cloud.passcode) throw new Error('Missing passcode');
+            const body = new URLSearchParams({
+                action,
+                passcode: state.cloud.passcode,
+                payload: JSON.stringify(payloadObj)
+            });
+            return navigator.sendBeacon(state.cloud.scriptUrl, body);
+        }
+
+        function mergeWorkoutsIntoLocal(incomingWorkouts) {
+            const byId = new Map(state.workoutLog.map(w => [String(w.id), w]));
+            (incomingWorkouts || []).forEach(w => {
+                const key = String(w.id);
+                const existing = byId.get(key);
+                if (!existing) {
+                    byId.set(key, w);
+                } else {
+                    const exU = existing.updated_at ? new Date(existing.updated_at).getTime() : 0;
+                    const inU = w.updated_at ? new Date(w.updated_at).getTime() : 0;
+                    if (inU > exU) byId.set(key, w);
+                }
+            });
+            state.workoutLog = Array.from(byId.values()).sort((a,b)=> new Date(a.date) - new Date(b.date));
+            saveData();
+        }
+
+        async function cloudPull() {
+            try {
+                const res = await cloudJsonp('list');
+                if (!res || res.ok !== true) throw new Error((res && res.error) || 'Unknown error');
+                mergeWorkoutsIntoLocal(res.workouts || []);
+                state.cloud.status = `Pulled ${(res.workouts||[]).length} session(s) from cloud.`;
+            } catch (e) {
+                state.cloud.status = `❌ ${e.message || e}`;
+            }
+            render();
+        }
+
+        function cloudPushAllLocal() {
+            try {
+                if (state.workoutLog.length === 0) {
+                    state.cloud.status = 'No local workouts to push.';
+                    render();
+                    return;
+                }
+                let okCount = 0;
+                state.workoutLog.forEach(w => {
+                    const sent = cloudSendBeacon('upsert', { workout: w });
+                    if (sent) okCount++;
+                });
+                state.cloud.status = `Sent ${okCount} session(s) to cloud (background write). Now tap "Pull from Cloud" to confirm.`;
+            } catch (e) {
+                state.cloud.status = `❌ ${e.message || e}`;
+            }
+            render();
+        }
+
+        // ---------------------------
+        // Backup export/import
+        // ---------------------------
         function exportData() {
             const data = {
                 exercises: state.exercises,
                 workouts: state.workoutLog,
                 exportDate: new Date().toISOString(),
-                version: '1.0'
+                version: '1.1'
             };
-            
+
             const dataStr = JSON.stringify(data, null, 2);
             const dataBlob = new Blob([dataStr], { type: 'application/json' });
             const url = URL.createObjectURL(dataBlob);
+
             const link = document.createElement('a');
             link.href = url;
             link.download = `gym-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
@@ -330,11 +256,10 @@ function cloudPushAllLocal() {
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
-            
+
             alert('Backup downloaded successfully!');
         }
 
-        // Import backup
         function importData() {
             const input = document.createElement('input');
             input.type = 'file';
@@ -347,7 +272,7 @@ function cloudPushAllLocal() {
                 reader.onload = (e) => {
                     try {
                         const data = JSON.parse(e.target.result);
-                        
+
                         if (data.exercises && data.workouts) {
                             if (confirm('This will replace all your current data. Continue?')) {
                                 state.exercises = data.exercises;
@@ -368,7 +293,6 @@ function cloudPushAllLocal() {
             input.click();
         }
 
-        // Clear all data
         function clearAllData() {
             if (confirm('Are you sure? This will delete ALL your workout data!')) {
                 if (confirm('Last chance! Really delete everything?')) {
@@ -383,13 +307,17 @@ function cloudPushAllLocal() {
                         cardio: ['Outdoor Walk', 'Running']
                     };
                     state.workoutLog = [];
+                    state.currentWorkout = [];
+                    state.currentScreen = 'home';
                     alert('All data cleared.');
                     render();
                 }
             }
         }
 
-        // Add exercise to current workout
+        // ---------------------------
+        // Workout editing
+        // ---------------------------
         function addExerciseToWorkout(exercise, category) {
             const isCardio = category === 'cardio';
             state.currentWorkout.push({
@@ -406,23 +334,16 @@ function cloudPushAllLocal() {
             render();
         }
 
-        // Update exercise set
         function updateExerciseSet(exerciseId, setIndex, field, value) {
             const exercise = state.currentWorkout.find(ex => ex.id === exerciseId);
-            if (exercise) {
-                exercise.sets[setIndex][field] = value;
-            }
+            if (exercise) exercise.sets[setIndex][field] = value;
         }
 
-        // Update cardio field
         function updateCardioField(exerciseId, field, value) {
             const exercise = state.currentWorkout.find(ex => ex.id === exerciseId);
-            if (exercise) {
-                exercise[field] = value;
-            }
+            if (exercise) exercise[field] = value;
         }
 
-        // Add set
         function addSet(exerciseId) {
             const exercise = state.currentWorkout.find(ex => ex.id === exerciseId);
             if (exercise) {
@@ -431,7 +352,6 @@ function cloudPushAllLocal() {
             }
         }
 
-        // Remove set
         function removeSet(exerciseId, setIndex) {
             const exercise = state.currentWorkout.find(ex => ex.id === exerciseId);
             if (exercise && exercise.sets.length > 1) {
@@ -440,16 +360,14 @@ function cloudPushAllLocal() {
             }
         }
 
-        // Remove exercise from workout
         function removeExerciseFromWorkout(exerciseId) {
             state.currentWorkout = state.currentWorkout.filter(ex => ex.id !== exerciseId);
             render();
         }
 
-        // Save workout
         function saveWorkout() {
             if (state.currentWorkout.length === 0) return;
-            
+
             const nowIso = new Date().toISOString();
             const workout = {
                 id: Date.now(),
@@ -457,7 +375,7 @@ function cloudPushAllLocal() {
                 updated_at: nowIso,
                 exercises: state.currentWorkout
             };
-            
+
             state.workoutLog.push(workout);
             state.currentWorkout = [];
             state.currentScreen = 'home';
@@ -465,10 +383,9 @@ function cloudPushAllLocal() {
             render();
         }
 
-        // Add new exercise
         function addNewExercise() {
             if (!state.newExerciseName.trim()) return;
-            
+
             const category = state.newExerciseCategory;
             state.exercises[category].push(state.newExerciseName.trim());
             state.newExerciseName = '';
@@ -477,7 +394,6 @@ function cloudPushAllLocal() {
             render();
         }
 
-        // Delete exercise
         function deleteExercise(category, exerciseName) {
             if (confirm(`Delete "${exerciseName}"?`)) {
                 state.exercises[category] = state.exercises[category].filter(ex => ex !== exerciseName);
@@ -486,7 +402,9 @@ function cloudPushAllLocal() {
             }
         }
 
-        // Render functions
+        // ---------------------------
+        // Screens
+        // ---------------------------
         function renderHome() {
             const thisWeekCount = state.workoutLog.filter(w => {
                 const workoutDate = new Date(w.date);
@@ -497,7 +415,7 @@ function cloudPushAllLocal() {
 
             return `
                 <h1>💪 Gym Tracker</h1>
-                
+
                 <div class="card">
                     <button class="btn" onclick="navigateTo('log')">➕ Log Workout</button>
                     <button class="btn" onclick="navigateTo('progress')">📈 View Progress</button>
@@ -537,7 +455,7 @@ function cloudPushAllLocal() {
             let html = `
                 <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
                 <h1>Log Workout</h1>
-                
+
                 <div class="card">
                     <h3 style="margin-bottom: 15px;">Add Exercise</h3>
                     <div class="grid" style="margin-bottom: 15px;">
@@ -545,7 +463,7 @@ function cloudPushAllLocal() {
 
             Object.keys(state.exercises).forEach(category => {
                 html += `
-                    <button class="category-btn ${state.selectedCategory === category ? 'active' : ''}" 
+                    <button class="category-btn ${state.selectedCategory === category ? 'active' : ''}"
                             onclick="state.selectedCategory = state.selectedCategory === '${category}' ? '' : '${category}'; render();">
                         ${category.charAt(0).toUpperCase() + category.slice(1)}
                     </button>
@@ -557,7 +475,7 @@ function cloudPushAllLocal() {
             if (state.selectedCategory) {
                 state.exercises[state.selectedCategory].forEach(exercise => {
                     html += `
-                        <button class="btn btn-secondary" 
+                        <button class="btn btn-secondary"
                                 onclick="addExerciseToWorkout('${exercise}', '${state.selectedCategory}')">
                             ${exercise}
                         </button>
@@ -569,8 +487,8 @@ function cloudPushAllLocal() {
 
             if (state.currentWorkout.length > 0) {
                 html += `<div class="card"><h3 style="margin-bottom: 15px;">Current Workout</h3>`;
-                
-                state.currentWorkout.forEach((exercise, idx) => {
+
+                state.currentWorkout.forEach(exercise => {
                     html += `
                         <div class="exercise-item">
                             <div class="flex" style="margin-bottom: 10px;">
@@ -584,22 +502,24 @@ function cloudPushAllLocal() {
                             html += `
                                 <div class="set-row">
                                     <span>Set ${setIdx + 1}</span>
-                                    <input type="number" placeholder="Weight" value="${set.weight}" 
+                                    <input type="number" placeholder="Weight" value="${set.weight}"
                                            oninput="updateExerciseSet(${exercise.id}, ${setIdx}, 'weight', this.value)">
-                                    <input type="number" placeholder="Reps" value="${set.reps}" 
+                                    <input type="number" placeholder="Reps" value="${set.reps}"
                                            oninput="updateExerciseSet(${exercise.id}, ${setIdx}, 'reps', this.value)">
-                                    ${exercise.sets.length > 1 ? `<button class="btn-small btn-danger" onclick="removeSet(${exercise.id}, ${setIdx})">✕</button>` : '<span></span>'}
+                                    ${exercise.sets.length > 1
+                                        ? `<button class="btn-small btn-danger" onclick="removeSet(${exercise.id}, ${setIdx})">✕</button>`
+                                        : '<span></span>'}
                                 </div>
                             `;
                         });
                         html += `<button class="btn-small btn-secondary" onclick="addSet(${exercise.id})">+ Add Set</button>`;
                     } else {
                         html += `
-                            <input type="number" placeholder="Duration (minutes)" value="${exercise.duration}" 
+                            <input type="number" placeholder="Duration (minutes)" value="${exercise.duration || ''}"
                                    oninput="updateCardioField(${exercise.id}, 'duration', this.value)">
-                            <input type="number" placeholder="Distance (miles)" value="${exercise.distance}" 
+                            <input type="number" placeholder="Distance (miles)" value="${exercise.distance || ''}"
                                    oninput="updateCardioField(${exercise.id}, 'distance', this.value)">
-                            <input type="number" placeholder="Calories" value="${exercise.calories}" 
+                            <input type="number" placeholder="Calories" value="${exercise.calories || ''}"
                                    oninput="updateCardioField(${exercise.id}, 'calories', this.value)">
                         `;
                     }
@@ -616,9 +536,10 @@ function cloudPushAllLocal() {
         function renderProgress() {
             if (state.progressView) {
                 const isCardio = state.exercises.cardio.includes(state.progressView);
-                const workouts = state.workoutLog.filter(w => 
-                    w.exercises.some(ex => ex.name === state.progressView)
-                ).reverse().slice(0, 10);
+                const workouts = state.workoutLog
+                    .filter(w => w.exercises.some(ex => ex.name === state.progressView))
+                    .reverse()
+                    .slice(0, 10);
 
                 let html = `
                     <a href="#" class="back-btn" onclick="state.progressView = null; render(); return false;">← Back to Exercise List</a>
@@ -642,7 +563,7 @@ function cloudPushAllLocal() {
                             if (exercise.calories) html += `<p>Calories: ${exercise.calories}</p>`;
                         } else {
                             const maxWeight = Math.max(...exercise.sets.map(s => parseFloat(s.weight) || 0));
-                            const totalVolume = exercise.sets.reduce((sum, s) => 
+                            const totalVolume = exercise.sets.reduce((sum, s) =>
                                 sum + (parseFloat(s.weight) || 0) * (parseInt(s.reps) || 0), 0
                             );
                             html += `
@@ -660,9 +581,8 @@ function cloudPushAllLocal() {
                 return html;
             }
 
-            // Exercise list
             const allExercises = Object.values(state.exercises).flat();
-            const exercisesWithData = allExercises.filter(ex => 
+            const exercisesWithData = allExercises.filter(ex =>
                 state.workoutLog.some(w => w.exercises.some(e => e.name === ex))
             );
 
@@ -693,10 +613,10 @@ function cloudPushAllLocal() {
             let html = `
                 <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
                 <h1>Manage Exercises</h1>
-                
+
                 <div class="card">
                     <h3 style="margin-bottom: 15px;">Add New Exercise</h3>
-                    <input type="text" placeholder="Exercise name" value="${state.newExerciseName}" 
+                    <input type="text" placeholder="Exercise name" value="${state.newExerciseName}"
                            oninput="state.newExerciseName = this.value">
                     <select onchange="state.newExerciseCategory = this.value">
             `;
@@ -737,142 +657,129 @@ function cloudPushAllLocal() {
         }
 
         function renderHistory() {
-    let html = `
-        <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
-        <h1>Workout History</h1>
-    `;
-
-    if (state.workoutLog.length === 0) {
-        html += `
-            <div class="card" style="text-align: center; padding: 40px;">
-                <p style="font-size: 1.2em;">No workouts logged yet</p>
-                <p style="opacity: 0.8; margin-top: 10px;">Start tracking your progress today!</p>
-            </div>
-        `;
-    } else {
-        state.workoutLog.slice().reverse().forEach(workout => {
-            html += `
-                <div class="card">
-                    <div class="workout-date">
-                        ${new Date(workout.date).toLocaleDateString('en-US', {
-                            weekday: 'long',
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                        })}
-                    </div>
+            let html = `
+                <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
+                <h1>Workout History</h1>
             `;
 
-            workout.exercises.forEach(exercise => {
+            if (state.workoutLog.length === 0) {
                 html += `
-                    <div class="exercise-item">
-                        <strong>${exercise.name}</strong><br>
+                    <div class="card" style="text-align: center; padding: 40px;">
+                        <p style="font-size: 1.2em;">No workouts logged yet</p>
+                        <p style="opacity: 0.8; margin-top: 10px;">Start tracking your progress today!</p>
+                    </div>
                 `;
+            } else {
+                state.workoutLog.slice().reverse().forEach(workout => {
+                    html += `
+                        <div class="card">
+                            <div class="workout-date">
+                                ${new Date(workout.date).toLocaleDateString('en-US', {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })}
+                            </div>
+                    `;
 
-                if (exercise.type === 'strength') {
-                    exercise.sets.forEach((set, idx) => {
-                        html += `<div style="font-size: 0.9em; opacity: 0.9;">Set ${idx + 1}: ${set.weight} lbs × ${set.reps} reps</div>`;
+                    workout.exercises.forEach(exercise => {
+                        html += `
+                            <div class="exercise-item">
+                                <strong>${exercise.name}</strong><br>
+                        `;
+
+                        if (exercise.type === 'strength') {
+                            exercise.sets.forEach((set, idx) => {
+                                html += `<div style="font-size: 0.9em; opacity: 0.9;">Set ${idx + 1}: ${set.weight} lbs × ${set.reps} reps</div>`;
+                            });
+                        } else {
+                            if (exercise.duration) html += `<div style="font-size: 0.9em; opacity: 0.9;">Duration: ${exercise.duration} min</div>`;
+                            if (exercise.distance) html += `<div style="font-size: 0.9em; opacity: 0.9;">Distance: ${exercise.distance} miles</div>`;
+                            if (exercise.calories) html += `<div style="font-size: 0.9em; opacity: 0.9;">Calories: ${exercise.calories}</div>`;
+                        }
+
+                        html += `</div>`;
                     });
-                } else {
-                    if (exercise.duration) html += `<div style="font-size: 0.9em; opacity: 0.9;">Duration: ${exercise.duration} min</div>`;
-                    if (exercise.distance) html += `<div style="font-size: 0.9em; opacity: 0.9;">Distance: ${exercise.distance} miles</div>`;
-                    if (exercise.calories) html += `<div style="font-size: 0.9em; opacity: 0.9;">Calories: ${exercise.calories}</div>`;
-                }
 
-                html += `</div>`;
-            });
+                    html += `</div>`;
+                });
+            }
 
-            html += `</div>`;
-        });
-    }
-
-    return html;
-}
-            
-function renderCloud() {
-    const urlVal = state.cloud.scriptUrl || '';
-    const signedIn = !!state.cloud.passcode;
-
-    return `
-        <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
-        <h1>Cloud Sync</h1>
-
-        <div class="card" style="background: rgba(59, 130, 246, 0.15);">
-            <p style="font-size: 0.95em; line-height: 1.35;">
-                This sync shares your workouts across devices using a Google Sheet behind a Google Apps Script Web App.
-                Access is protected by a shared passcode (simple, not bank-vault security).
-            </p>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-bottom: 10px;">1) Script URL</h3>
-            <input type="text" placeholder="Paste your Apps Script Web App URL here" value="${urlVal}"
-                   oninput="setCloudScriptUrl(this.value)">
-            <div style="font-size: 0.9em; opacity: 0.85;">
-                Tip: it ends with <code>/exec</code>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-bottom: 10px;">2) Passcode</h3>
-            <input type="password" placeholder="Enter passcode" value="${state.cloud.passcode || ''}"
-                   oninput="setPasscode(this.value)">
-            <div style="font-size: 0.9em; opacity: 0.85;">
-                Status: ${signedIn ? '✅ Signed in' : '⚠️ Not signed in'}
-            </div>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-bottom: 10px;">Sync Actions</h3>
-            <button class="btn" onclick="cloudPull()">⬇️ Pull from Cloud</button>
-            <button class="btn btn-secondary" onclick="cloudPushAllLocal()">⬆️ Push All Local to Cloud</button>
-            <div style="margin-top: 10px; font-size: 0.95em; opacity: 0.9;">
-                ${state.cloud.status ? state.cloud.status : ' '}
-            </div>
-        </div>
-
-        <div class="card" style="background: rgba(236, 72, 153, 0.12);">
-            <p style="font-size: 0.9em; line-height: 1.35;">
-                Recommended flow on a new device: set Script URL + passcode, then tap <strong>Pull from Cloud</strong>.
-            </p>
-        </div>
-    `;
-}
-
-return html;
+            return html;
         }
 
-        // Navigation
+        function renderCloud() {
+            const urlVal = state.cloud.scriptUrl || '';
+            const signedIn = !!state.cloud.passcode;
+
+            return `
+                <a href="#" class="back-btn" onclick="navigateTo('home'); return false;">← Back to Home</a>
+                <h1>Cloud Sync</h1>
+
+                <div class="card" style="background: rgba(59, 130, 246, 0.15);">
+                    <p style="font-size: 0.95em; line-height: 1.35;">
+                        This sync shares your workouts across devices using a Google Sheet behind a Google Apps Script Web App.
+                        Access is protected by a shared passcode (simple, not bank-vault security).
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 10px;">1) Script URL</h3>
+                    <input type="text" placeholder="Paste your Apps Script Web App URL here" value="${urlVal}"
+                           oninput="setCloudScriptUrl(this.value)">
+                    <div style="font-size: 0.9em; opacity: 0.85;">
+                        Tip: it ends with <code>/exec</code>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 10px;">2) Passcode</h3>
+                    <input type="password" placeholder="Enter passcode" value="${state.cloud.passcode || ''}"
+                           oninput="setPasscode(this.value)">
+                    <div style="font-size: 0.9em; opacity: 0.85;">
+                        Status: ${signedIn ? '✅ Signed in' : '⚠️ Not signed in'}
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 10px;">Sync Actions</h3>
+                    <button class="btn" onclick="cloudPull()">⬇️ Pull from Cloud</button>
+                    <button class="btn btn-secondary" onclick="cloudPushAllLocal()">⬆️ Push All Local to Cloud</button>
+                    <div style="margin-top: 10px; font-size: 0.95em; opacity: 0.9;">
+                        ${state.cloud.status ? state.cloud.status : ' '}
+                    </div>
+                </div>
+
+                <div class="card" style="background: rgba(236, 72, 153, 0.12);">
+                    <p style="font-size: 0.9em; line-height: 1.35;">
+                        Recommended flow on a new device: set Script URL + passcode, then tap <strong>Pull from Cloud</strong>.
+                    </p>
+                </div>
+            `;
+        }
+
+        // ---------------------------
+        // Navigation + main render
+        // ---------------------------
         function navigateTo(screen) {
             state.currentScreen = screen;
             state.selectedCategory = '';
             render();
         }
 
-        // Main render function
         function render() {
             const app = document.getElementById('app');
             let content = '';
 
             switch(state.currentScreen) {
-                case 'home':
-                    content = renderHome();
-                    break;
-                case 'log':
-                    content = renderLog();
-                    break;
-                case 'progress':
-                    content = renderProgress();
-                    break;
-                case 'manage':
-                    content = renderManage();
-                    break;
-                case 'history':
-                    content = renderHistory();
-                    break;
-                case 'cloud':
-                    content = renderCloud();
-                    break;
+                case 'home': content = renderHome(); break;
+                case 'log': content = renderLog(); break;
+                case 'progress': content = renderProgress(); break;
+                case 'manage': content = renderManage(); break;
+                case 'history': content = renderHistory(); break;
+                case 'cloud': content = renderCloud(); break;
+                default: content = renderHome(); break;
             }
 
             app.innerHTML = content;
